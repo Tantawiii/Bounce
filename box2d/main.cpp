@@ -24,7 +24,7 @@ int main() {
     gridMap.loadGrid("gridTest.txt", levelGrid, emptyPositions);
 
     std::vector<std::string> texturePaths = {
-        "Textures/TILE BRICK.png", "Textures/TILE BRICK wo ground.png",
+        "Textures/TILE BRICK ground.png", "Textures/TILE BRICK wo ground.png",
         "Textures/TILE BRICK ground tilt.png", "Textures/TILE BRICK jump.png",
         "Textures/sky bb.png", "Textures/flag.png", "Textures/Hole.png",
         "Textures/Pillar.png", "Textures/gate.png", "Textures/size up.png",
@@ -41,16 +41,23 @@ int main() {
 
     gridMap.initializePhysics(world, levelGrid, cellSizeX, cellSizeY);
 
+    sf::Sprite background;
+    background.setTexture(gridMap.getTexture(4)); // Set the texture (index 4)
+    background.setScale(
+        static_cast<float>(WINDOW_WIDTH) / background.getTexture()->getSize().x,
+        static_cast<float>(WINDOW_HEIGHT) / background.getTexture()->getSize().y
+    );
+
     // Use texture 15 for the player
     sf::Texture* playerTexture = &gridMap.getTexture(15);
     sf::CircleShape playerCircle(15.0f); // Radius in pixels
     playerCircle.setTexture(playerTexture);
-    playerCircle.setOrigin(15.0f, 15.0f); // Center origin
+    playerCircle.setOrigin(15.0f, -15.0f); // Center origin
 
     // Create the player's dynamic circle body in Box2D
     b2BodyDef playerBodyDef;
     playerBodyDef.type = b2_dynamicBody;
-    playerBodyDef.position.Set(1.0f, 1.0f); // Initial position in meters
+    playerBodyDef.position.Set(3.0f, 1.0f); // Initial position in meters
     b2Body* playerBody = world.CreateBody(&playerBodyDef);
 
     b2CircleShape playerShape;
@@ -66,41 +73,69 @@ int main() {
     int currentSceneX = 0; // Current scene X index
     int currentSceneY = 0; // Current scene Y index
 
-    // Main game loop
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::KeyPressed) {
+                b2Vec2 currentPosition = playerBody->GetPosition();
+                switch (event.key.code) {
+                case sf::Keyboard::D:
+                    playerBody->SetTransform(b2Vec2(currentPosition.x + 0.5f, currentPosition.y), playerBody->GetAngle());
+                    break;
+
+                case sf::Keyboard::A:
+                    playerBody->SetTransform(b2Vec2(currentPosition.x - 0.5f, currentPosition.y), playerBody->GetAngle());
+                    break;
+
+                case sf::Keyboard::S:
+                    playerBody->SetTransform(b2Vec2(currentPosition.x, currentPosition.y + 0.5f), playerBody->GetAngle());
+                    break;
+                default:
+                    break;
+                }
+            }
+            if (event.type == sf::Event::Resized) {
+                float newWidth = static_cast<float>(event.size.width);
+                float newHeight = static_cast<float>(event.size.height);
+
+                float aspectRatio = newWidth / newHeight;
+
+                if (aspectRatio > WINDOW_WIDTH / WINDOW_HEIGHT) {
+                    float newViewWidth = WINDOW_HEIGHT * aspectRatio;
+                    sceneView.setSize(newViewWidth, WINDOW_HEIGHT);
+                }
+                else {
+                    float newViewHeight = WINDOW_HEIGHT / aspectRatio;
+                    sceneView.setSize(WINDOW_HEIGHT, newViewHeight);
+                }
+
+                window.setView(sceneView);
+            }
         }
 
-        // Step the Box2D world
         world.Step(1.0f / 60.0f, 6, 2);
 
-        // Update player's position in SFML
         b2Vec2 playerPosition = playerBody->GetPosition();
         playerCircle.setPosition(playerPosition.x * SCALE, playerPosition.y * SCALE);
 
-        // Check if the player has moved to a new scene
-        int playerSceneX = playerCircle.getPosition().x / WINDOW_WIDTH;
-        int playerSceneY = playerCircle.getPosition().y / WINDOW_HEIGHT;
+        int playerSceneX = playerCircle.getPosition().x / (SCENE_WIDTH * cellSizeX);
+        int playerSceneY = playerCircle.getPosition().y / (SCENE_HEIGHT * cellSizeY);
 
-        if (playerSceneX != currentSceneX || playerSceneY != currentSceneY) {
+        if (playerSceneX >= 0 && playerSceneX < (levelGrid[0].size() / SCENE_WIDTH) &&
+            playerSceneY >= 0 && playerSceneY < (levelGrid.size() / SCENE_HEIGHT)) {
+            // Update current scene and view
             currentSceneX = playerSceneX;
             currentSceneY = playerSceneY;
-
-            // Update the view to the new scene
             sceneView.setCenter(currentSceneX * WINDOW_WIDTH + WINDOW_WIDTH / 2,
                 currentSceneY * WINDOW_HEIGHT + WINDOW_HEIGHT / 2);
             window.setView(sceneView);
         }
 
         window.clear();
-
-        // Render walls and objects for the current scene
+        window.draw(background);
         gridMap.drawWalls(window, levelGrid, cellSizeX, cellSizeY, sceneView);
-
-        // Render the player
         window.draw(playerCircle);
         window.display();
     }
