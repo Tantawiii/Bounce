@@ -21,6 +21,7 @@ public:
     bool isMoving = false;
     bool isMaximized = false;
     bool isMinimized = false;
+    bool isNormal = false;
     void setScore(int s);
     int getScore();
     void startWaveEffect();

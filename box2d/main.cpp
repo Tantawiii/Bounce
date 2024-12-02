@@ -5,7 +5,7 @@
 #include "Collectible.h"
 #include "Water.h"
 using namespace sf;
-
+float ballGravity;
 class MyContactListener : public b2ContactListener {
 public:
     MyContactListener(Ball& ball, std::vector<Collectible*>& collectibles, std::vector<Collectible*>& toRemove, bool& jumpFlag, Water& water)
@@ -28,7 +28,8 @@ public:
             printf("Ball collided with water!\n");
             water.startWaveEffect(); // Trigger wave effect
             ball.startWaveEffect(); // Trigger wave effect
-            //ball.getBody()->SetGravityScale(0.0);
+            ballGravity = ball.getBody()->GetGravityScale();
+            ball.getBody()->SetGravityScale(0.0);
         }
 
         // Check for collectible collision
@@ -36,6 +37,18 @@ public:
             if (bodyA == collectible->getBody() || bodyB == collectible->getBody()) {
                 toRemove.push_back(collectible); // Mark collectible for removal
             }
+        }
+    }
+    void EndContact(b2Contact* contact) override {
+        b2Body* bodyA = contact->GetFixtureA()->GetBody();
+        b2Body* bodyB = contact->GetFixtureB()->GetBody();
+
+        // Ball exits water
+        if ((bodyA == ball.getBody() && bodyB == water.getBody()) ||
+            (bodyB == ball.getBody() && bodyA == water.getBody())) {
+            printf("Ball exited the water!\n");
+            ball.getBody()->SetGravityScale(ballGravity);
+            // ball.getBody()->SetGravityScale(1.0); // Optional: Restore gravity when exiting water
         }
     }
 
@@ -114,11 +127,26 @@ int main() {
             if (event.type == Event::KeyReleased && (event.key.code == Keyboard::D || event.key.code == Keyboard::A)) {
                 ball.isMoving = false;
             }
-            if (event.type == Event::KeyReleased && event.key.code == Keyboard::X && !ball.isMaximized) {
-                ball.maximizeSize();
+            if (event.type == Event::KeyReleased && event.key.code == Keyboard::X && !ball.isMaximized ) {
+            
+                if (ball.isNormal)
+                    ball.maximizeSize();
+                else {
+                    ball.maximizeSize();
+                    ball.isNormal = true;
+                    ball.isMaximized = false;
+                    ball.isMinimized = false;
+                }
             }
             if (event.type == Event::KeyReleased && event.key.code == Keyboard::N && !ball.isMinimized) {
-                ball.minimizeSize();
+                if(ball.isNormal)
+                    ball.minimizeSize();
+                else {
+                    ball.minimizeSize();
+                    ball.isNormal = true;
+                    ball.isMinimized = false;
+                    ball.isMaximized = false;
+                }
             }
         }
 

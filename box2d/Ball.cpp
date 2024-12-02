@@ -1,6 +1,7 @@
 #include "Ball.h"
 Ball::Ball(b2World* world, float x, float y)
 {
+    isNormal = true;
     // Create a Box2D body for the ball
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(x / SCALE, y / SCALE);  // Convert from SFML units to Box2D units
@@ -89,6 +90,7 @@ void Ball::maximizeSize()
     body->CreateFixture(&newFixtureDef);
     isMaximized = true;
     isMinimized = false;
+    isNormal = false;
 }
 
 void Ball::minimizeSize()
@@ -107,6 +109,7 @@ void Ball::minimizeSize()
     body->CreateFixture(&newFixtureDef);
     isMinimized = true;
     isMaximized = false;
+    isNormal = false;
 }
 
 void Ball::move(float direction)
