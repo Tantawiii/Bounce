@@ -19,10 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="ContactListener.cpp" />
+    <ClCompile Include="Ground.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ball.h" />
+    <ClInclude Include="ContactListener.h" />
+    <ClInclude Include="Ground.h" />
     <ClInclude Include="Map.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
