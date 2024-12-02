@@ -64,8 +64,20 @@ void Ball::draw(sf::RenderWindow& window) {
 
 void Ball::jump()
 {
-    // Apply an impulse for the jump
-    b2Vec2 impulse(0.0f, -10.0f);  // Impulse in the negative Y direction (upward)
+
+    b2Vec2 impulse;
+
+    if (isMaximized) {
+        impulse.Set(0.0f, -45.0f);
+    }
+    else if (isNormal) {
+        impulse.Set(0.0f, -10.0f);
+    }
+    else if (isMinimized) {
+        impulse.Set(0.0f, -2.0f);
+    }
+
+
     body->ApplyLinearImpulseToCenter(impulse, true);
 }
 

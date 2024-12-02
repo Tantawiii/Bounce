@@ -4,12 +4,13 @@
 #include "Ball.h"
 #include "Collectible.h"
 #include "Water.h"
+#include "Flag.h"
 using namespace sf;
 float ballGravity;
 class MyContactListener : public b2ContactListener {
 public:
-    MyContactListener(Ball& ball, std::vector<Collectible*>& collectibles, std::vector<Collectible*>& toRemove, bool& jumpFlag, Water& water)
-        : ball(ball), collectibles(collectibles), toRemove(toRemove), isJumping(jumpFlag), water(water) {
+    MyContactListener(Ball& ball, std::vector<Collectible*>& collectibles, std::vector<Collectible*>& toRemove, bool& jumpFlag, Water& water, Flag& flag)
+        : ball(ball), collectibles(collectibles), toRemove(toRemove), isJumping(jumpFlag), water(water), flag(flag) {
     }
 
     void BeginContact(b2Contact* contact) override {
@@ -23,17 +24,24 @@ public:
             }
         }
 
+        // Ball collides with water
         if ((bodyA == ball.getBody() && bodyB == water.getBody()) ||
             (bodyB == ball.getBody() && bodyA == water.getBody())) {
             printf("Ball collided with water!\n");
             if (ball.isMaximized) {
-                
                 ball.startWaveEffect(); // Trigger wave effect
                 ballGravity = ball.getBody()->GetGravityScale();
                 ball.getBody()->SetGravityScale(0.0);
+
             }
             water.startWaveEffect(); // Trigger wave effect
-            
+        }
+
+        // Ball collides with flag
+        if ((bodyA == ball.getBody() && bodyB == flag.getBody()) ||
+            (bodyB == ball.getBody() && bodyA == flag.getBody())) {
+            printf("Winner!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            flag.onCollision();
         }
 
         // Check for collectible collision
@@ -43,6 +51,7 @@ public:
             }
         }
     }
+
     void EndContact(b2Contact* contact) override {
         b2Body* bodyA = contact->GetFixtureA()->GetBody();
         b2Body* bodyB = contact->GetFixtureB()->GetBody();
@@ -52,7 +61,6 @@ public:
             (bodyB == ball.getBody() && bodyA == water.getBody())) {
             printf("Ball exited the water!\n");
             ball.getBody()->SetGravityScale(ballGravity);
-            // ball.getBody()->SetGravityScale(1.0); // Optional: Restore gravity when exiting water
         }
     }
 
@@ -62,11 +70,12 @@ private:
     std::vector<Collectible*>& toRemove;
     bool& isJumping;
     Water& water;
+    Flag& flag;
 };
 
 int main() {
     // SFML window setup
-    RenderWindow window(VideoMode(800, 600), "Box2D + SFML Jumping");
+    RenderWindow window(VideoMode(800, 600), "Bounce");
     window.setFramerateLimit(60);
 
     // Box2D world setup
@@ -74,7 +83,8 @@ int main() {
     b2World world(gravity);
 
     // Create a ball object
-    Ball ball(&world, 400, 100);
+    Ball ball(&world, 200, 100);
+    Flag flag(&world, 150.0f, 630.0f, 100.0f, 100.0f, "C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/flag.png");
 
     // Create the water object before passing to MyContactListener
     Water water(&world, 400, 500, 300, 500);
@@ -103,7 +113,8 @@ int main() {
 
     // Contact listener to reset jump flag and handle collisions
     bool isJumping = false;
-    MyContactListener contactListener(ball, collectibles, toRemove, isJumping, water); // Pass 'water' object here
+    MyContactListener contactListener(ball, collectibles, toRemove, isJumping, water, flag);
+    // Pass 'water' object here
     world.SetContactListener(&contactListener);
 
     sf::Clock clock;
@@ -160,6 +171,7 @@ int main() {
         // Update objects
         ball.update(deltaTime);
         water.update(deltaTime);
+        flag.update();
         for (auto& collectible : collectibles) {
             collectible->update();
         }
@@ -178,6 +190,7 @@ int main() {
             collectible->draw(window);
         }
         water.draw(window);
+        flag.draw(window);
         ball.draw(window);
         window.draw(groundRect);
         window.display();

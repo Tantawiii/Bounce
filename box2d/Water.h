@@ -10,11 +10,9 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
     b2Body* getBody() { return body; }
-    b2Body* getRedBoxBody() { return redBoxBody; }
 
 private:
     b2Body* body;
-    b2Body* redBoxBody;
     sf::RectangleShape waterRect;
     sf::RectangleShape redBox;
     bool waveActive;
