@@ -26,10 +26,14 @@ public:
         if ((bodyA == ball.getBody() && bodyB == water.getBody()) ||
             (bodyB == ball.getBody() && bodyA == water.getBody())) {
             printf("Ball collided with water!\n");
+            if (ball.isMaximized) {
+                
+                ball.startWaveEffect(); // Trigger wave effect
+                ballGravity = ball.getBody()->GetGravityScale();
+                ball.getBody()->SetGravityScale(0.0);
+            }
             water.startWaveEffect(); // Trigger wave effect
-            ball.startWaveEffect(); // Trigger wave effect
-            ballGravity = ball.getBody()->GetGravityScale();
-            ball.getBody()->SetGravityScale(0.0);
+            
         }
 
         // Check for collectible collision
@@ -70,10 +74,10 @@ int main() {
     b2World world(gravity);
 
     // Create a ball object
-    Ball ball(&world, 400, 300);
+    Ball ball(&world, 400, 100);
 
     // Create the water object before passing to MyContactListener
-    Water water(&world, 400, 500, 300, 100);
+    Water water(&world, 400, 500, 300, 500);
 
     // Create a ground object
     b2BodyDef groundBodyDef;

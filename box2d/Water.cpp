@@ -35,7 +35,7 @@ void Water::update(float deltaTime)
         waveTime += deltaTime;
 
         // Stop wave after a short duration
-        if (waveTime > 2.0f) { // 2 seconds
+        if (waveTime > 4.0f) { // 2 seconds
             waveActive = false;
             waveTime = 0.0f;
         }
