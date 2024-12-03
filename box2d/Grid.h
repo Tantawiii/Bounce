@@ -4,7 +4,7 @@
 class Grid
 {
 private:
-    sf::Texture textures[21];
+    sf::Texture textures[24];
     std::map<char, int> charToTextureIndex;
 
 public:

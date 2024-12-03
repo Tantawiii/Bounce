@@ -2,11 +2,24 @@
 #include "Grid.h"
 
 // Constants
-const int SCENE_WIDTH = 21;  // Number of grid cells wide per scene
-const int SCENE_HEIGHT = 15; // Number of grid cells tall per scene
+const int SCENE_WIDTH = 15;  // Number of grid cells wide per scene
+const int SCENE_HEIGHT = 8; // Number of grid cells tall per scene
+
+//// Function to load and play background music
+//void playBackgroundMusic(SoundBuffer& buffer, Sound& sound) {
+//    if (buffer.loadFromFile("C:/Users/omart/OneDrive/Documents/GitHub/SnakeGame/SfmlTests/music.mp3")) {
+//        sound.setBuffer(buffer);
+//        sound.setLoop(true); // Optional: loops the sound continuously
+//        sound.setVolume(10); // Set volume (adjust as needed)
+//        sound.play();
+//    }
+//    else {
+//        cerr << "Error: Could not load background music." << endl;
+//    }
+//}
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Dynamic Scene Loading with Box2D");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Bounce");
     sf::View sceneView(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)); // View for the current scene
     window.setView(sceneView);
 
@@ -21,6 +34,9 @@ int main() {
     Grid gridMap;
     std::vector<Position> emptyPositions;
     std::vector<std::vector<char>> levelGrid;
+    //SoundBuffer buffer;
+    //Sound sound;
+    //playBackgroundMusic(buffer, sound);
     gridMap.loadGrid("gridTest.txt", levelGrid, emptyPositions);
 
     std::vector<std::string> texturePaths = {
@@ -31,9 +47,26 @@ int main() {
         "Textures/Spike.png", "Textures/star.png", "Textures/heart-HP.png",
         "Textures/coin.png", "Textures/TILE BRICK wo ground tilt fill.png",
         "Textures/ball final.png", "Textures/cracked ball FINAL.png",
-        "Textures/TILEBRICKwogroundtiltfill.png", "Textures/TILEBRICKwogroundtiltupside.png",
-        "Textures/TILE BRICK ground tilt update.png", "Textures/TILEBRICKwogroundtiltfill.png"
+        "Textures/TILE BRICK wo ground tilt fill.png", "Textures/TILEBRICKwogroundtiltupside.png",
+        "Textures/monster1.png", "Textures/TILEBRICKwogroundtiltfill.png",
+        "Textures/TILE BRICK wo ground wo grass.png", "Textures/TILEBRICKwogroundtiltupsidegrass.png",
+        "Textures/TILE BRICK ground tilt opposite.png"
     };
+
+    sf::Texture backgroundTexture;
+    if (!backgroundTexture.loadFromFile("Textures/sky bb.png")) {
+        std::cerr << "Error: Could not load background texture." << std::endl;
+        return EXIT_FAILURE;
+    }
+    sf::Sprite backgroundSprite;
+    backgroundSprite.setTexture(backgroundTexture);
+
+    // Scale the background to fit the entire window
+    backgroundSprite.setScale(
+        static_cast<float>(WINDOW_WIDTH) / backgroundTexture.getSize().x,
+        static_cast<float>(WINDOW_HEIGHT) / backgroundTexture.getSize().y
+    );
+
 
     if (!gridMap.loadTextures(texturePaths)) {
         return EXIT_FAILURE;
@@ -41,12 +74,17 @@ int main() {
 
     gridMap.initializePhysics(world, levelGrid, cellSizeX, cellSizeY);
 
-    sf::Sprite background;
-    background.setTexture(gridMap.getTexture(4)); // Set the texture (index 4)
-    background.setScale(
-        static_cast<float>(WINDOW_WIDTH) / background.getTexture()->getSize().x,
-        static_cast<float>(WINDOW_HEIGHT) / background.getTexture()->getSize().y
-    );
+    //sf::Texture& backgroundTexture = gridMap.getTexture(4);
+    //std::cout << "Texture size: "
+    //    << backgroundTexture.getSize().x << " x "
+    //    << backgroundTexture.getSize().y << std::endl;
+
+    //sf::Sprite background;
+    //background.setTexture(backgroundTexture);
+    //background.setScale(
+    //    static_cast<float>(WINDOW_WIDTH) / backgroundTexture.getSize().x,
+    //    static_cast<float>(WINDOW_HEIGHT) / backgroundTexture.getSize().y
+    //);
 
     // Use texture 15 for the player
     sf::Texture* playerTexture = &gridMap.getTexture(15);
@@ -134,7 +172,7 @@ int main() {
         }
 
         window.clear();
-        window.draw(background);
+        window.draw(backgroundSprite);
         gridMap.drawWalls(window, levelGrid, cellSizeX, cellSizeY, sceneView);
         window.draw(playerCircle);
         window.display();

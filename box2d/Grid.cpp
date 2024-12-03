@@ -18,8 +18,8 @@ void Grid::loadGrid(const std::string& path, std::vector<std::vector<char>>& gri
 }
 
 bool Grid::loadTextures(const std::vector<std::string>& texturePaths) {
-    if (texturePaths.size() != 21) {
-        std::cerr << "Error: Expected 21 texture paths, got " << texturePaths.size() << std::endl;
+    if (texturePaths.size() != 24) {
+        std::cerr << "Error: Expected 24 texture paths, got " << texturePaths.size() << std::endl;
         return false;
     }
 
@@ -35,7 +35,8 @@ bool Grid::loadTextures(const std::vector<std::string>& texturePaths) {
         {'1', 4}, {'2', 5}, {'3', 6}, {'4', 7}, // Sky, Flag, Hole, Plank
         {'5', 8}, {'6', 9}, {'7', 10}, {'8', 11}, // Ring, Size Up, Spike, Star
         {'9', 12}, {'E', 13}, {'Y', 14}, {'T', 15}, // Heart, Coin, Ball
-        {'W', 16}, {'U', 17}, {'V', 18}, {'G', 19}, {'H', 20} // Additional tiles
+        {'W', 16}, {'U', 17}, {'V', 18}, {'G', 19}, {'H', 20}, // Additional tiles
+        {'P', 21 }, {'I', 22}, {'O', 23}
     };
 
     return true;
@@ -69,32 +70,46 @@ void Grid::drawWalls(sf::RenderWindow& window, const std::vector<std::vector<cha
     sf::Vector2f center = view.getCenter();
     sf::Vector2f size = view.getSize();
 
-    // Determine visible rows and columns based on view
-    int startRow = std::max(0, (int)((center.y - size.y / 2) / cellSizeY));
-    int endRow = std::min((int)grid.size(), (int)((center.y + size.y / 2) / cellSizeY) + 1);
-
-    int startCol = std::max(0, (int)((center.x - size.x / 2) / cellSizeX));
-    int endCol = std::min((int)grid[0].size(), (int)((center.x + size.x / 2) / cellSizeX) + 1);
+    int startRow = std::max(0, static_cast<int>((center.y - size.y / 2) / cellSizeY));
+    int endRow = std::min(static_cast<int>(grid.size()), static_cast<int>((center.y + size.y / 2) / cellSizeY) + 1);
+    int startCol = std::max(0, static_cast<int>((center.x - size.x / 2) / cellSizeX));
+    int endCol = std::min(static_cast<int>(grid[0].size()), static_cast<int>((center.x + size.x / 2) / cellSizeX) + 1);
 
     for (int row = startRow; row < endRow; ++row) {
         for (int col = startCol; col < endCol; ++col) {
-            if (row < 0 || col < 0 || row >= grid.size() || col >= grid[row].size()) {
-                continue;
-            }
-
-            sf::RectangleShape cell(sf::Vector2f(cellSizeX, cellSizeY));
-            cell.setPosition(col * cellSizeX, row * cellSizeY);
-
             char gridChar = grid[row][col];
             if (charToTextureIndex.find(gridChar) != charToTextureIndex.end()) {
                 int textureIndex = charToTextureIndex[gridChar];
-                if (textureIndex >= 0 && textureIndex < 21) {
-                    sf::Vector2u textureSize = textures[textureIndex].getSize();
-                    cell.setTexture(&textures[textureIndex]);
-                    cell.setTextureRect(sf::IntRect(0, 0, cellSizeX, cellSizeY));
+                std::cout << "Rendering char '" << gridChar << "' at (" << row << ", " << col << ") with texture index " << textureIndex << std::endl;
+
+                if (textureIndex >= 0 && textureIndex < 24) {
+                    sf::RectangleShape cell(sf::Vector2f(cellSizeX, cellSizeY));
+                    cell.setPosition(col * cellSizeX, row * cellSizeY);
+
+                    if (gridChar == 'O') {
+                        cell.setTexture(&textures[textureIndex]);
+                        std::cout << "Rendering 'O' texture.\n";
+                        window.draw(cell);
+                    }
+                    else if (gridChar == '1') {
+                        cell.setTexture(&textures[textureIndex]);
+                        cell.setFillColor(sf::Color(255, 255, 255, 128)); // Semi-transparent sky
+                        std::cout << "Rendering '1' (sky) texture.\n";
+                        window.draw(cell);
+                    }
+                    else {
+                        cell.setTexture(&textures[textureIndex]);
+                        cell.setTextureRect(sf::IntRect(0, 0, cellSizeX, cellSizeY));
+                        window.draw(cell);
+                    }
+                }
+                else {
+                    std::cerr << "Invalid texture index " << textureIndex << " for char '" << gridChar << "'\n";
                 }
             }
-            window.draw(cell);
+            else {
+                std::cerr << "Unhandled gridChar '" << gridChar << "' at (" << row << ", " << col << ")\n";
+            }
         }
     }
 }
