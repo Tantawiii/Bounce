@@ -50,7 +50,7 @@ void Grid::initializePhysics(b2World& world, const std::vector<std::vector<char>
     for (size_t row = 0; row < grid.size(); ++row) {
         for (size_t col = 0; col < grid[row].size(); ++col) {
             char gridChar = grid[row][col];
-            if (gridChar == 'X') {
+            if (gridChar == 'X' || gridChar == 'C') {
                 // Create static Box2D body for ground/walls
                 b2BodyDef bodyDef;
                 bodyDef.position.Set(col * (float)cellSizeX / SCALE, row * (float)cellSizeY / SCALE);
@@ -120,15 +120,15 @@ void Grid::drawWalls(sf::RenderWindow& window, const std::vector<std::vector<cha
     }
 }
 
-void Grid::switchView(sf::RenderWindow& window, sf::View& view, int scene, const sf::CircleShape& playerCircle) {
-    sf::Vector2f playerPosition = playerCircle.getPosition();
+void Grid::switchView(sf::RenderWindow& window, sf::View& view, int scene, const b2Vec2& playerCircle) {
+    sf::Vector2f playerPosition = Vector2f(playerCircle.x , playerCircle.y);
 
     switch (scene) {
     case 0: // Full game view
         view.setCenter(WINDOW_WIDTH, WINDOW_HEIGHT);
         view.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         break;
-
+    
     case 1: // Vertical split
         if (playerPosition.x < WINDOW_WIDTH / 2) {
             view.setCenter(WINDOW_WIDTH / 4, WINDOW_HEIGHT / 2);
@@ -164,6 +164,10 @@ void Grid::switchView(sf::RenderWindow& window, sf::View& view, int scene, const
         view.setSize(player_Scene_WIDTH * SCALE, player_Scene_HEIGHT * SCALE);
         break;
 
+    case 4:
+        view.setCenter(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+        view.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        break;
     default:
         std::cerr << "Invalid scene index." << std::endl;
         break;

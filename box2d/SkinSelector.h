@@ -20,8 +20,10 @@ private:
     sf::Texture catTexture;
     sf::Texture penguinTexture;
     sf::Texture redTexture;
+    sf::Texture bgTexture;
 
     sf::Sprite duckSprite;
+    sf::Sprite bgSprite;
     sf::Sprite catSprite;
     sf::Sprite penguinSprite;
     sf::Sprite redSprite;

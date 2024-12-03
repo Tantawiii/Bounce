@@ -6,10 +6,8 @@
 #include "Water.h"
 #include "Collectible.h"
 #include "MyContactListener.h"
+#include "MovingColliders.h"
 
-// Constants
-const int SCENE_WIDTH = 15;  // Number of grid cells wide per scene
-const int SCENE_HEIGHT = 8; // Number of grid cells tall per scene
 
 //// Function to load and play background music
 //void playBackgroundMusic(SoundBuffer& buffer, Sound& sound) {
@@ -115,6 +113,10 @@ int main() {
     Flag flag(&world, 500.0f, 580.0f, 100.0f, 100.0f, "Textures/flag.png");
     Water water(&world, 400, 500, 300, 500);
     // Create the player's dynamic circle body in Box2D
+
+    MovingColliders collider(world, sf::Vector2f(22.5f, 25.0f), sf::Vector2f(5.0f, 0.0f), 1.0f, true, false);
+    MovingColliders collider2(world, sf::Vector2f(5.0f, 15.0f), sf::Vector2f(0.0f, 4.f), 1.0f, false, true);
+
     std::vector<Collectible*> collectibles;
     collectibles.push_back(new Collectible(&world, 200, 400));
     collectibles.push_back(new Collectible(&world, 600, 400));
@@ -125,6 +127,7 @@ int main() {
     MyContactListener contactListener(ball, collectibles, toRemove, isJumping, water, flag);
     int currentSceneX = 0; // Current scene X index
     int currentSceneY = 0; // Current scene Y index
+    int currentScene = 0;
     world.SetContactListener(&contactListener);
     sf::Clock clock;
     while (window.isOpen()) {
@@ -172,6 +175,27 @@ int main() {
                     }
                 }
             }
+            switch (event.key.code) {
+            case sf::Keyboard::Num1:
+                currentScene = 0; // Full view
+                break;
+            case sf::Keyboard::Num2:
+                currentScene = 1; // Vertical split
+                break;
+            case sf::Keyboard::Num3:
+                currentScene = 2; // Four quadrants
+                break;
+            case sf::Keyboard::Num4:
+                currentScene = 3; // Player-focused
+                break;
+            case sf::Keyboard::Num5:
+                currentScene = 4; // Player-focused
+                break;
+            default:    
+                break;
+            }
+
+            gridMap.switchView(window, sceneView, currentScene, ball.GetPosition());
             if (event.type == sf::Event::Resized) {
                 float newWidth = static_cast<float>(event.size.width);
                 float newHeight = static_cast<float>(event.size.height);
@@ -190,9 +214,10 @@ int main() {
                 window.setView(sceneView);
             }
         }
-
+        
         world.Step(1.0f / 60.0f, 6, 2);
-
+        collider.updateColliderX(deltaTime);
+        collider2.updateColliderY(deltaTime);
 
         int playerSceneX = playerCircle.getPosition().x / (SCENE_WIDTH * cellSizeX);
         int playerSceneY = playerCircle.getPosition().y / (SCENE_HEIGHT * cellSizeY);
@@ -224,11 +249,14 @@ int main() {
 
         // Render everything
         window.clear();
+        
         window.draw(backgroundSprite);
         gridMap.drawWalls(window, levelGrid, cellSizeX, cellSizeY, sceneView);
         for (auto& collectible : collectibles) {
             collectible->draw(window);
         }
+        collider.renderCollider(window);
+        collider2.renderCollider(window);
         water.draw(window);
         flag.draw(window);
         ball.draw(window);

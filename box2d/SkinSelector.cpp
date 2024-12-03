@@ -2,6 +2,12 @@
 
 SkinSelector::SkinSelector(float windowWidth, float windowHeight)
 {
+    if (!bgTexture.loadFromFile("Textures/sky bb.png")) { // Replace with your actual background image path
+        std::cerr << "Failed to load background texture!" << std::endl;
+    }
+    bgSprite.setTexture(bgTexture);
+    bgSprite.setScale(windowWidth / bgTexture.getSize().x, windowHeight / bgTexture.getSize().y);
+
     // Load textures and set up sprites for each skin
     setupSkin(duckSprite, duckTexture, "Textures/duck.png", windowWidth / 2 - 300, windowHeight / 2);
     setupSkin(catSprite, catTexture, "Textures/CATskin.png", windowWidth / 2 - 100, windowHeight / 2);
@@ -43,6 +49,7 @@ Skin SkinSelector::handleInput(const sf::RenderWindow& window)
 
 void SkinSelector::draw(sf::RenderWindow& window)
 {
+    window.draw(bgSprite);
     window.draw(redSprite);
     window.draw(duckSprite);
     window.draw(catSprite);
