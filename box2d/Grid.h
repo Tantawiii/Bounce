@@ -12,5 +12,6 @@ public:
     void drawWalls(sf::RenderWindow& window, const std::vector<std::vector<char>>& grid, int cellSizeX, int cellSizeY, sf::View& view);
     bool loadTextures(const std::vector<std::string>& texturePaths);
     void initializePhysics(b2World& world, const std::vector<std::vector<char>>& grid, int cellSizeX, int cellSizeY);
+    void switchView(sf::RenderWindow& window, sf::View& view, int scene, const sf::CircleShape& playerCircle);
     Texture& getTexture(int index);
 };

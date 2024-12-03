@@ -80,7 +80,7 @@ void Grid::drawWalls(sf::RenderWindow& window, const std::vector<std::vector<cha
             char gridChar = grid[row][col];
             if (charToTextureIndex.find(gridChar) != charToTextureIndex.end()) {
                 int textureIndex = charToTextureIndex[gridChar];
-                std::cout << "Rendering char '" << gridChar << "' at (" << row << ", " << col << ") with texture index " << textureIndex << std::endl;
+                //std::cout << "Rendering char '" << gridChar << "' at (" << row << ", " << col << ") with texture index " << textureIndex << std::endl;
 
                 if (textureIndex >= 0 && textureIndex < 24) {
                     sf::RectangleShape cell(sf::Vector2f(cellSizeX, cellSizeY));
@@ -88,28 +88,86 @@ void Grid::drawWalls(sf::RenderWindow& window, const std::vector<std::vector<cha
 
                     if (gridChar == 'O') {
                         cell.setTexture(&textures[textureIndex]);
-                        std::cout << "Rendering 'O' texture.\n";
+                        //std::cout << "Rendering 'O' texture.\n";
                         window.draw(cell);
                     }
                     else if (gridChar == '1') {
                         cell.setTexture(&textures[textureIndex]);
                         cell.setFillColor(sf::Color(255, 255, 255, 128)); // Semi-transparent sky
-                        std::cout << "Rendering '1' (sky) texture.\n";
+                        //std::cout << "Rendering '1' (sky) texture.\n";
                         window.draw(cell);
                     }
                     else {
+                        //cell.setTexture(&textures[textureIndex]);
+                        //cell.setTextureRect(sf::IntRect(0, 0, cellSizeX, cellSizeY));
+                        float scaleFactor = std::min(
+                            static_cast<float>(cellSizeX) / textures[textureIndex].getSize().x,
+                            static_cast<float>(cellSizeY) / textures[textureIndex].getSize().y
+                        );
                         cell.setTexture(&textures[textureIndex]);
-                        cell.setTextureRect(sf::IntRect(0, 0, cellSizeX, cellSizeY));
+                        cell.setScale(scaleFactor, scaleFactor);
                         window.draw(cell);
                     }
                 }
-                else {
-                    std::cerr << "Invalid texture index " << textureIndex << " for char '" << gridChar << "'\n";
-                }
+                //else {
+                //    std::cerr << "Invalid texture index " << textureIndex << " for char '" << gridChar << "'\n";
+                //}
             }
             else {
-                std::cerr << "Unhandled gridChar '" << gridChar << "' at (" << row << ", " << col << ")\n";
+                //std::cerr << "Unhandled gridChar '" << gridChar << "' at (" << row << ", " << col << ")\n";
             }
         }
     }
+}
+
+void Grid::switchView(sf::RenderWindow& window, sf::View& view, int scene, const sf::CircleShape& playerCircle) {
+    sf::Vector2f playerPosition = playerCircle.getPosition();
+
+    switch (scene) {
+    case 0: // Full game view
+        view.setCenter(WINDOW_WIDTH, WINDOW_HEIGHT);
+        view.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        break;
+
+    case 1: // Vertical split
+        if (playerPosition.x < WINDOW_WIDTH / 2) {
+            view.setCenter(WINDOW_WIDTH / 4, WINDOW_HEIGHT / 2);
+        }
+        else {
+            view.setCenter(3 * WINDOW_WIDTH / 4, WINDOW_HEIGHT / 2);
+        }
+        view.setSize(WINDOW_WIDTH / 2, WINDOW_HEIGHT);
+        break;
+
+    case 2: // Four quadrants
+        if (playerPosition.x < WINDOW_WIDTH / 2) {
+            if (playerPosition.y < WINDOW_HEIGHT / 2) {
+                view.setCenter(WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4); // Top-left quadrant
+            }
+            else {
+                view.setCenter(WINDOW_WIDTH / 4, 3 * WINDOW_HEIGHT / 4); // Bottom-left quadrant
+            }
+        }
+        else {
+            if (playerPosition.y < WINDOW_HEIGHT / 2) {
+                view.setCenter(3 * WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4); // Top-right quadrant
+            }
+            else {
+                view.setCenter(3 * WINDOW_WIDTH / 4, 3 * WINDOW_HEIGHT / 4); // Bottom-right quadrant
+            }
+        }
+        view.setSize(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+        break;
+
+    case 3: // Player-focused view
+        view.setCenter(playerPosition.x, playerPosition.y);
+        view.setSize(player_Scene_WIDTH * SCALE, player_Scene_HEIGHT * SCALE);
+        break;
+
+    default:
+        std::cerr << "Invalid scene index." << std::endl;
+        break;
+    }
+
+    window.setView(view);
 }

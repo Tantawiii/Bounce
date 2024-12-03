@@ -1,9 +1,6 @@
 #include "Inclusion.h"
 #include "Grid.h"
 
-// Constants
-const int SCENE_WIDTH = 15;  // Number of grid cells wide per scene
-const int SCENE_HEIGHT = 8; // Number of grid cells tall per scene
 
 //// Function to load and play background music
 //void playBackgroundMusic(SoundBuffer& buffer, Sound& sound) {
@@ -63,8 +60,8 @@ int main() {
 
     // Scale the background to fit the entire window
     backgroundSprite.setScale(
-        static_cast<float>(WINDOW_WIDTH) / backgroundTexture.getSize().x,
-        static_cast<float>(WINDOW_HEIGHT) / backgroundTexture.getSize().y
+        static_cast<float>(WINDOW_WIDTH) /*/ SCENE_WIDTH*/ / backgroundTexture.getSize().x,
+        static_cast<float>(WINDOW_HEIGHT) /*/ SCENE_HEIGHT*/ / backgroundTexture.getSize().y
     );
 
 
@@ -97,6 +94,7 @@ int main() {
     playerBodyDef.type = b2_dynamicBody;
     playerBodyDef.position.Set(3.0f, 1.0f); // Initial position in meters
     b2Body* playerBody = world.CreateBody(&playerBodyDef);
+    playerCircle.setPosition(playerCircle.getPosition());
 
     b2CircleShape playerShape;
     playerShape.m_radius = 0.5f; // Radius in meters
@@ -110,6 +108,7 @@ int main() {
 
     int currentSceneX = 0; // Current scene X index
     int currentSceneY = 0; // Current scene Y index
+    int currentScene = 0;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -130,9 +129,23 @@ int main() {
                 case sf::Keyboard::S:
                     playerBody->SetTransform(b2Vec2(currentPosition.x, currentPosition.y + 0.5f), playerBody->GetAngle());
                     break;
+
+                case sf::Keyboard::Num1:
+                        currentScene = 0; // Full view
+                        break;
+                case sf::Keyboard::Num2:
+                        currentScene = 1; // Vertical split
+                        break;
+                case sf::Keyboard::Num3:
+                        currentScene = 2; // Four quadrants
+                        break;
+                case sf::Keyboard::Num4:
+                    currentScene = 3; // Player-focused
+                    break;
                 default:
                     break;
                 }
+                gridMap.switchView(window, sceneView, currentScene, playerCircle);
             }
             if (event.type == sf::Event::Resized) {
                 float newWidth = static_cast<float>(event.size.width);
@@ -150,6 +163,7 @@ int main() {
                 }
 
                 window.setView(sceneView);
+                gridMap.switchView(window, sceneView, currentScene, playerCircle);
             }
         }
 
@@ -173,7 +187,10 @@ int main() {
 
         window.clear();
         window.draw(backgroundSprite);
+
         gridMap.drawWalls(window, levelGrid, cellSizeX, cellSizeY, sceneView);
+        //gridMap.switchView(window, sceneView, currentScene, playerCircle);
+
         window.draw(playerCircle);
         window.display();
     }
