@@ -126,9 +126,13 @@ void Level1() {
     // Box2D world setup
     b2Vec2 gravity(0.0f, 9.8f);  // Gravity vector
     b2World world(gravity);
+    sf::Texture ballTexture;
+    if (!ballTexture.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/ball final.png")) {
+        // Handle error
+    }
 
     // Create a ball object
-    Ball ball(&world, 680, 100);
+    Ball ball(&world, 680, 100 , ballTexture);
     Flag flag(&world, 850.0f, 630.0f, 100.0f, 100.0f, "C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/flag.png");
 
     // Create the water object before passing to MyContactListener

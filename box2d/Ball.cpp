@@ -1,5 +1,5 @@
 #include "Ball.h"
-Ball::Ball(b2World* world, float x, float y)
+Ball::Ball(b2World* world, float x, float y, const sf::Texture& texture)
 {
     isNormal = true;
     // Create a Box2D body for the ball
@@ -20,9 +20,12 @@ Ball::Ball(b2World* world, float x, float y)
 
     // Set SFML shape properties
     shape.setRadius(20.0f);
-    shape.setFillColor(sf::Color::Blue);
-    shape.setOrigin(20.0f, 20.0f);// Center origin
+    shape.setOrigin(20.0f, 20.0f); // Center origin
+    shape.setFillColor(sf::Color::White);  // Default color before texture
 
+    // Load and apply the texture
+    ballTexture = texture;  // Copy the texture
+    shape.setTexture(&ballTexture);
     waveEffectActive = false;
     waveTime = 0.0f;
 }

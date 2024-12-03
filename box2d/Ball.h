@@ -6,7 +6,7 @@
 
 class Ball {
 public:
-    Ball(b2World* world, float x, float y);
+    Ball(b2World* world, float x, float y, const sf::Texture& texture);
     void update(float deltaTime);
 
     void draw(sf::RenderWindow& window);
@@ -32,4 +32,5 @@ private:
     int score = 0;
     bool waveEffectActive = false;
     float waveTime = 0.0f;
+    sf::Texture ballTexture;
 };

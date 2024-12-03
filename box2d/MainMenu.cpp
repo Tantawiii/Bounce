@@ -11,9 +11,9 @@ MainMenu::MainMenu(float windowWidth, float windowHeight)
     }
 
     // Set up buttons
-    setupButton(playButton, playTexture, windowWidth / 2, windowHeight / 2 - 60, sf::Vector2f(4.0f, 4.0f));  // Slightly higher
-    setupButton(levelsButton, levelsTexture, windowWidth / 2, windowHeight / 2, sf::Vector2f(4.0f, 4.0f));     // Centered vertically
-    setupButton(exitButton, exitTexture, windowWidth / 2, windowHeight / 2 + 60, sf::Vector2f(4.0f, 4.0f));   // Slightly lower
+    setupButton(playButton, playTexture, windowWidth / 2, windowHeight / 2 - 60, sf::Vector2f(6.0f, 6.0f));  // Slightly higher
+    setupButton(levelsButton, levelsTexture, windowWidth / 2, windowHeight / 2, sf::Vector2f(6.0f, 6.0f));     // Centered vertically
+    setupButton(exitButton, exitTexture, windowWidth / 2, windowHeight / 2 + 60, sf::Vector2f(6.0f, 6.0f));   // Slightly lower
 
 
     // Load font
@@ -25,7 +25,7 @@ MainMenu::MainMenu(float windowWidth, float windowHeight)
     // Set up title text
     titleText.setFont(font);
     titleText.setString("Bounce");
-    titleText.setCharacterSize(50);
+    titleText.setCharacterSize(100);
     titleText.setFillColor(sf::Color::White);
     titleText.setStyle(sf::Text::Bold);
     titleText.setPosition(windowWidth / 2 - titleText.getGlobalBounds().width / 2, 50);
