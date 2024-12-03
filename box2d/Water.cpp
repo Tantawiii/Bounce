@@ -59,3 +59,23 @@ void Water::draw(sf::RenderWindow& window)
     // Draw the water rectangle
     window.draw(waterRect);
 }
+//void Water::draw(sf::RenderWindow& window)
+//{
+//    if (waveActive) {
+//        // Create a vertex array to represent the sine wave with triangles for thickness
+//        sf::VertexArray wave(sf::TrianglesStrip, 40);  // Increase vertex count for thickness
+//        for (size_t i = 0; i < 20; ++i) {
+//            float x = waterRect.getPosition().x + (i / 19.0f) * waterRect.getSize().x;
+//            float y = waterRect.getPosition().y + std::sin(waveTime * 5 + i * 0.5f) * 10; // Sine wave
+//
+//            // Create two points for the thickness of the wave (increase the horizontal distance)
+//            float thickness = 15.0f;  // Increased thickness for a bolder wave
+//            wave[i * 2].position = sf::Vector2f(x - thickness, y);
+//            wave[i * 2 + 1].position = sf::Vector2f(x + thickness, y);
+//            wave[i * 2].color = sf::Color(0, 0, 255, 180);  // Color for the wave
+//            wave[i * 2 + 1].color = sf::Color(0, 0, 255, 180);
+//        }
+//        window.draw(wave);
+//    }
+//    window.draw(waterRect);
+//}
