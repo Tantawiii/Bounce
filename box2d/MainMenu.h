@@ -23,10 +23,12 @@ private:
     sf::Texture playTexture;
     sf::Texture levelsTexture;
     sf::Texture exitTexture;
+    sf::Texture bgTexture;
 
     sf::Sprite playButton;
     sf::Sprite levelsButton;
     sf::Sprite exitButton;
+    sf::Sprite bgSprite;
 
     sf::Font font;
     sf::Text titleText;

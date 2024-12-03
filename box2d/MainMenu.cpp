@@ -3,18 +3,23 @@
 MainMenu::MainMenu(float windowWidth, float windowHeight)
 {
     // Load textures
-    if (!playTexture.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/PLAY.png") ||
+    if (!bgTexture.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/Mainmenu.png") ||
+        !playTexture.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/PLAY.png") ||
         !levelsTexture.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/LEVELBLUE.png") ||
         !exitTexture.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/EXIT.png")) {
         std::cout << "Failed to load menu images!" << std::endl;
         return;
     }
 
-    // Set up buttons
-    setupButton(playButton, playTexture, windowWidth / 2, windowHeight / 2 - 60, sf::Vector2f(6.0f, 6.0f));  // Slightly higher
-    setupButton(levelsButton, levelsTexture, windowWidth / 2, windowHeight / 2, sf::Vector2f(6.0f, 6.0f));     // Centered vertically
-    setupButton(exitButton, exitTexture, windowWidth / 2, windowHeight / 2 + 60, sf::Vector2f(6.0f, 6.0f));   // Slightly lower
+    // Set up background
+    bgSprite.setTexture(bgTexture);
+    bgSprite.setScale(windowWidth / bgTexture.getSize().x, windowHeight / bgTexture.getSize().y); // Scale background to fit the window
 
+    // Set up buttons (align to the left side)
+    float buttonX = 100.0f;  // Button positions on the left
+    setupButton(playButton, playTexture, buttonX, windowHeight / 2 - 60, sf::Vector2f(6.0f, 6.0f));
+    setupButton(levelsButton, levelsTexture, buttonX, windowHeight / 2, sf::Vector2f(6.0f, 6.0f));
+    setupButton(exitButton, exitTexture, buttonX, windowHeight / 2 + 60, sf::Vector2f(6.0f, 6.0f));
 
     // Load font
     if (!font.loadFromFile("C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Fonts/pixelfont.ttf")) {
@@ -26,7 +31,7 @@ MainMenu::MainMenu(float windowWidth, float windowHeight)
     titleText.setFont(font);
     titleText.setString("Bounce");
     titleText.setCharacterSize(100);
-    titleText.setFillColor(sf::Color::White);
+    titleText.setFillColor(sf::Color::Blue);
     titleText.setStyle(sf::Text::Bold);
     titleText.setPosition(windowWidth / 2 - titleText.getGlobalBounds().width / 2, 50);
 }
@@ -50,6 +55,7 @@ MenuOption MainMenu::handleInput(const sf::RenderWindow& window)
 
 void MainMenu::draw(sf::RenderWindow& window)
 {
+    window.draw(bgSprite); // Draw the background image
     window.draw(titleText);
     window.draw(playButton);
     window.draw(levelsButton);
