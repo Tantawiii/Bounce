@@ -34,7 +34,7 @@ Flag::Flag(b2World* world, float x, float y, float width, float height, const st
     // Red outline for debugging
 
    // Debug output
-    printf("Flag Body Position: %.2f, %.2f\n", body->GetPosition().x, body->GetPosition().y);
+    //printf("Flag Body Position: %.2f, %.2f\n", body->GetPosition().x, body->GetPosition().y);
 }
 
 void Flag::update() {
@@ -42,9 +42,9 @@ void Flag::update() {
     b2Vec2 bodyPos = body->GetPosition();
     //    debugShape.setPosition(bodyPos.x * Ball::SCALE, bodyPos.y * Ball::SCALE);  // Convert Box2D position to SFML units
 
-    printf("Flag Body Position: %.2f, %.2f | Debug Shape Position: %.2f, %.2f\n",
-        body->GetPosition().x, body->GetPosition().y,
-        debugShape.getPosition().x, debugShape.getPosition().y);
+    //printf("Flag Body Position: %.2f, %.2f | Debug Shape Position: %.2f, %.2f\n",
+       // body->GetPosition().x, body->GetPosition().y,
+       // debugShape.getPosition().x, debugShape.getPosition().y);
 
     if (isColliding) {
         sprite.setScale(sprite.getScale().x, sprite.getScale().y + 0.2f);  // Adjust scale on collision

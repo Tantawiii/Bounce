@@ -17,9 +17,9 @@ MainMenu::MainMenu(float windowWidth, float windowHeight)
 
     // Set up buttons (align to the left side)
     float buttonX = 100.0f;  // Button positions on the left
-    setupButton(playButton, playTexture, buttonX, windowHeight / 2 - 60, sf::Vector2f(6.0f, 6.0f));
-    setupButton(levelsButton, levelsTexture, buttonX, windowHeight / 2, sf::Vector2f(6.0f, 6.0f));
-    setupButton(exitButton, exitTexture, buttonX, windowHeight / 2 + 60, sf::Vector2f(6.0f, 6.0f));
+    setupButton(playButton, playTexture, buttonX, windowHeight / 2 - 60, sf::Vector2f(3.0f, 3.0f));
+    setupButton(levelsButton, levelsTexture, buttonX, windowHeight / 2, sf::Vector2f(3.0f, 3.0f));
+    setupButton(exitButton, exitTexture, buttonX, windowHeight / 2 + 60, sf::Vector2f(3.0f, 3.0f));
 
     // Load font
     if (!font.loadFromFile("Textures/Fonts/pixelfont.ttf")) {
@@ -43,6 +43,12 @@ MenuOption MainMenu::handleInput(const sf::RenderWindow& window)
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         if (playButton.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+            std::cout << "Mouse Position: " << mousePos.x << ", " << mousePos.y << std::endl;
+        std::cout << "Play Button Bounds: "
+            << playButton.getGlobalBounds().left << ", "
+            << playButton.getGlobalBounds().top << ", "
+            << playButton.getGlobalBounds().width << ", "
+            << playButton.getGlobalBounds().height << std::endl;
             return MenuOption::Play;
         }
         if (levelsButton.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
@@ -51,12 +57,14 @@ MenuOption MainMenu::handleInput(const sf::RenderWindow& window)
         if (exitButton.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
             return MenuOption::Exit;
         }
+        
     }
     return MenuOption::None;
 }
 
 void MainMenu::draw(sf::RenderWindow& window)
 {
+
     window.draw(bgSprite); // Draw the background image
     window.draw(titleText);
     window.draw(playButton);
@@ -66,8 +74,9 @@ void MainMenu::draw(sf::RenderWindow& window)
 
 void MainMenu::setupButton(sf::Sprite& button, sf::Texture& texture, float x, float y, sf::Vector2f scale)
 {
+
     button.setTexture(texture);
-    button.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+    button.setOrigin(texture.getSize().x / 2.0f, texture.getSize().y / 2.0f);
     button.setPosition(x, y);
     button.setScale(scale);
 }

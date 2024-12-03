@@ -229,8 +229,8 @@ int main() {
         for (auto& collectible : collectibles) {
             collectible->draw(window);
         }
-        //water.draw(window);
-        //flag.draw(window);
+        water.draw(window);
+        flag.draw(window);
         ball.draw(window);
         window.display();
     }
