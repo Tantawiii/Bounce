@@ -5,6 +5,7 @@
 #include "Collectible.h"
 #include "Water.h"
 #include "Flag.h"
+#include "MainMenu.h"
 using namespace sf;
 float ballGravity;
 class MyContactListener : public b2ContactListener {
@@ -77,9 +78,48 @@ private:
     Water& water;
     Flag& flag;
 };
+MenuOption mainMenu() {
+    const float windowWidth = 800.0f;
+    const float windowHeight = 600.0f;
 
-int main() {
-    // SFML window setup
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Main Menu");
+
+    MainMenu menu(windowWidth, windowHeight);
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+        }
+
+        // Handle menu interactions
+        MenuOption selectedOption = menu.handleInput(window);
+        if (selectedOption == MenuOption::Play) {
+            return MenuOption::Play;
+            std::cout << "Play selected!" << std::endl;
+            // Transition to the play state
+        }
+        else if (selectedOption == MenuOption::Levels) {
+            return MenuOption::Levels;
+            std::cout << "Levels selected!" << std::endl;
+            // Transition to the levels selection state
+        }
+        else if (selectedOption == MenuOption::Exit) {
+            return MenuOption::Exit;
+            std::cout << "Exit selected!" << std::endl;
+            window.close();
+        }
+
+        // Render the menu
+        window.clear();
+        menu.draw(window);
+        window.display();
+    }
+    return  MenuOption::None;
+}
+void Level1() {
     RenderWindow window(VideoMode(800, 600), "Bounce");
     window.setFramerateLimit(60);
 
@@ -147,8 +187,8 @@ int main() {
             if (event.type == Event::KeyReleased && (event.key.code == Keyboard::D || event.key.code == Keyboard::A)) {
                 ball.isMoving = false;
             }
-            if (event.type == Event::KeyReleased && event.key.code == Keyboard::X && !ball.isMaximized ) {
-            
+            if (event.type == Event::KeyReleased && event.key.code == Keyboard::X && !ball.isMaximized) {
+
                 if (ball.isNormal)
                     ball.maximizeSize();
                 else {
@@ -159,7 +199,7 @@ int main() {
                 }
             }
             if (event.type == Event::KeyReleased && event.key.code == Keyboard::N && !ball.isMinimized) {
-                if(ball.isNormal)
+                if (ball.isNormal)
                     ball.minimizeSize();
                 else {
                     ball.minimizeSize();
@@ -205,6 +245,13 @@ int main() {
     for (auto& collectible : collectibles) {
         delete collectible;
     }
-
+}
+int main() {
+    MenuOption option = mainMenu();
+    if (option == MenuOption::Play)Level1();
+    if (option == MenuOption::Levels)
+        std::cout << "LEVEL";
+    if (option == MenuOption::Exit)
+        std::cout << "Exit";
     return 0;
 }

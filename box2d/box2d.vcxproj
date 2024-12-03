@@ -23,12 +23,14 @@
     <ClCompile Include="Collectible.cpp" />
     <ClCompile Include="Flag.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Collectible.h" />
     <ClInclude Include="Flag.h" />
+    <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Water.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
