@@ -20,36 +20,50 @@ Flag::Flag(b2World* world, float x, float y, float width, float height, const st
     // Create Box2D body
     b2BodyDef bodyDef;
     bodyDef.type = b2_staticBody;
-    bodyDef.position.Set(x / Ball::SCALE, y / Ball::SCALE);
-    // SCALE is your game scaling factor
+    bodyDef.position.Set((x-125)/ Ball::SCALE, y / Ball::SCALE);  // Position in Box2D units
     body = world->CreateBody(&bodyDef);
-    
+
     b2PolygonShape boxShape;
-    boxShape.SetAsBox(width / 2 / Ball::SCALE, height / 2 / Ball::SCALE);
+    boxShape.SetAsBox((width-120 ) / Ball::SCALE, (height+100 ) / Ball::SCALE);  // Half dimensions in Box2D units
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &boxShape;
     fixtureDef.isSensor = true;  // Flag should act as a sensor
     body->CreateFixture(&fixtureDef);
+
+     // Red outline for debugging
+
+    // Debug output
+    printf("Flag Body Position: %.2f, %.2f\n", body->GetPosition().x, body->GetPosition().y);
 }
 
 void Flag::update() {
-    // Scale the sprite in Y direction when colliding
+    // Align debug shape with the Box2D body
+    b2Vec2 bodyPos = body->GetPosition();
+//    debugShape.setPosition(bodyPos.x * Ball::SCALE, bodyPos.y * Ball::SCALE);  // Convert Box2D position to SFML units
+
+    printf("Flag Body Position: %.2f, %.2f | Debug Shape Position: %.2f, %.2f\n",
+           body->GetPosition().x, body->GetPosition().y,
+           debugShape.getPosition().x, debugShape.getPosition().y);
+
     if (isColliding) {
-        sprite.setScale(sprite.getScale().x, sprite.getScale().y * 0.9f);  // Scale down by 10%
-        isColliding = false;  // Reset collision for one-time effect
+        sprite.setScale(sprite.getScale().x, sprite.getScale().y + 0.2f);  // Adjust scale on collision
+        isColliding = false;  // Reset collision flag
+        checkpointCount++;
     }
 }
 
 void Flag::draw(sf::RenderWindow& window) {
-    window.draw(sprite);
+    window.draw(sprite);       // Draw the sprite
+    window.draw(debugShape);   // Draw the debug shape
 }
 
 void Flag::onCollision() {
-    isColliding = true;  // Set the flag for collision
+    if (checkpointCount == 0) {
+        isColliding = true;  // Set the collision flag
+    }
 }
 
-b2Body* Flag::getBody()
-{
+b2Body* Flag::getBody() {
     return body;
 }

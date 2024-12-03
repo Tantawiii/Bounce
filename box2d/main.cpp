@@ -41,7 +41,12 @@ public:
         if ((bodyA == ball.getBody() && bodyB == flag.getBody()) ||
             (bodyB == ball.getBody() && bodyA == flag.getBody())) {
             printf("Winner!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            printf("Winner!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            printf("Winner!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            printf("Winner!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            printf("Winner!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
             flag.onCollision();
+
         }
 
         // Check for collectible collision
@@ -83,8 +88,8 @@ int main() {
     b2World world(gravity);
 
     // Create a ball object
-    Ball ball(&world, 200, 100);
-    Flag flag(&world, 150.0f, 630.0f, 100.0f, 100.0f, "C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/flag.png");
+    Ball ball(&world, 680, 100);
+    Flag flag(&world, 850.0f, 630.0f, 100.0f, 100.0f, "C:/Users/merot/OneDrive/Documents/GitHub/Bounce/box2d/assets/Images/flag.png");
 
     // Create the water object before passing to MyContactListener
     Water water(&world, 400, 500, 300, 500);
@@ -190,9 +195,9 @@ int main() {
             collectible->draw(window);
         }
         water.draw(window);
+        window.draw(groundRect);
         flag.draw(window);
         ball.draw(window);
-        window.draw(groundRect);
         window.display();
     }
 
